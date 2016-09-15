@@ -10,7 +10,9 @@ class GrammarViolation(Exception):
     pass
 
 class ElementBase(object):
-    pass
+    def __init__(self, **kwargs):
+        self.inputs = kwargs["inputs"] if "inputs" in kwargs else []
+        self.outputs = kwargs["outputs"] if "outputs" in kwargs else []
 
 class Executable(ElementBase):
     def __init__(self, prog, opts=[], **kwargs):

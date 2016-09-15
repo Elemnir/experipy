@@ -33,3 +33,4 @@ class Memtracer(PinTool):
             path.join(pinpath(), "source/tools/memtracer/obj-intel64/", "memtracer.so"),
             target, popts, topts, **kwargs
         )
+
