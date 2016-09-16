@@ -5,6 +5,6 @@ from experipy.exp    import Experiment
 
 if __name__ == "__main__":
     testscript = path.join(path.dirname(__file__), "test.py")
-    Experiment(PythonScript(testscript), 
+    Experiment(PythonScript(testscript, outputs=["test.out"]), 
         path.join(path.dirname(__file__), "results/")
     ).run(rm_rundir=False)

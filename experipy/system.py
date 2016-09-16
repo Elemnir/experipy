@@ -1,5 +1,6 @@
-from os import path
-from .grammar import Executable
+from os         import path
+
+from .grammar   import Executable
 
 class Cd(Executable):
     def __init__(self, dirname):
@@ -22,8 +23,11 @@ class Rm(Executable):
         super(Rm, self).__init__("rm", ["-rf"] + list(files))
 
 class PythonScript(Executable):
-    def __init__(self, script, sopts=[], pythonexe="/usr/bin/python"):
-        super(PythonScript, self).__init__(pythonexe, [script] + sopts,
-            inputs=[path.abspath(script)]
-        )
+    def __init__(self, script, sopts=[], pythonexe="/usr/bin/python", **kwargs):
+        if 'inputs' in kwargs:
+            kwargs['inputs'].append(path.abspath(script))
+        else:
+            kwargs['inputs'] = [path.abspath(script)]
+
+        super(PythonScript, self).__init__(pythonexe, [script] + sopts, **kwargs)
 

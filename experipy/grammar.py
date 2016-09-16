@@ -11,8 +11,8 @@ class GrammarViolation(Exception):
 
 class ElementBase(object):
     def __init__(self, **kwargs):
-        self.inputs = kwargs["inputs"] if "inputs" in kwargs else []
-        self.outputs = kwargs["outputs"] if "outputs" in kwargs else []
+        self.inputs = kwargs.get("inputs", [])
+        self.outputs = kwargs.get("outputs", [])
 
 class Executable(ElementBase):
     def __init__(self, prog, opts=[], **kwargs):
@@ -51,13 +51,13 @@ class Pipeline(ElementBase):
     def __repr__(self):
         return " | ".join(map(repr,self.parts))
 
-class Script(ElementBase):
+class Group(ElementBase):
     def __init__(self, *parts, **kwargs):
         for part in parts:
             if not (isinstance(part, ElementBase)):
                 raise GrammarViolation("'{}' is not an instance of ElementBase".format(part))
 
-        super(Script, self).__init__(**kwargs)
+        super(Group, self).__init__(**kwargs)
         self.parts = parts
 
     def __repr__(self):
