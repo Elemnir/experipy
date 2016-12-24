@@ -26,7 +26,7 @@ class ExpError(Exception):
 
 
 class Experiment(object):
-    def __init__(self, cmd, expname, destdir=None):
+    def __init__(self, cmd, expname=Exp.defname, destdir=None):
         if not isinstance(cmd, ElementBase):
             raise ExpError("'{}' is not an instance of ElementBase".format(cmd))
 
