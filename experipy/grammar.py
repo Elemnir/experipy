@@ -9,10 +9,12 @@ tokens = Namespace(
 class GrammarViolation(Exception):
     pass
 
+
 class ElementBase(object):
     def __init__(self, **kwargs):
         self.inputs = kwargs.get("inputs", [])
         self.outputs = kwargs.get("outputs", [])
+
 
 class Executable(ElementBase):
     def __init__(self, prog, opts=[], **kwargs):
@@ -22,6 +24,7 @@ class Executable(ElementBase):
 
     def __repr__(self):
         return "{0} {1}".format(self.prog, " ".join(self.opts))
+
 
 class Wrapper(ElementBase):
     def __init__(self, exe, wrapped, **kwargs):
@@ -39,6 +42,7 @@ class Wrapper(ElementBase):
     def __repr__(self):
         return str(self.exe).replace(tokens.wrapped, repr(self.wrapped))
 
+
 class Pipeline(ElementBase):
     def __init__(self, *parts, **kwargs):
         for part in parts:
@@ -50,6 +54,7 @@ class Pipeline(ElementBase):
 
     def __repr__(self):
         return " | ".join(map(repr,self.parts))
+
 
 class Group(ElementBase):
     def __init__(self, *parts, **kwargs):

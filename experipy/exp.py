@@ -17,79 +17,117 @@ Exp = Namespace(
     defname = "exp",
     out     = "raw.out",
     err     = "raw.err",
-    timing  = "harness_time.out"
+    timing  = "harness_time.out",
 )
+
 
 class ExpError(Exception):
     pass
 
+
 class Experiment(object):
-    def __init__(self, cmd, destdir):
+    def __init__(self, cmd, expname, destdir=None):
         if not isinstance(cmd, ElementBase):
             raise ExpError("'{}' is not an instance of ElementBase".format(cmd))
 
         self.cmd     = cmd
-        self.destdir = path.abspath(destdir)
+        self.expname = expname
+
+        if not destdir:
+            self.destdir = path.abspath(expname)
+        else:
+            self.destdir = path.abspath(destdir)
     
-    def write_runscript(self, fname=Exp.runsh, dryrun=False):
-        # Open the file and write the preamble
-        f = open(fname, "w") if not dryrun else sys.stdout
-        f.write(Exp.shebang + "\n\n")
+
+    def make_runscript(self, preamble=Exp.shebang, rm_rundir=True):
+        
+        # Name of the temporary directory for the experiment
+        rundir = path.join(Exp.rundir, self.expname + "." + str(int(time())))
+        
+        # Start with the preamble
+        scriptstr = preamble + "\n\n"
         
         # Collect experiment input files
-        f.write("# Experiment setup\n")
+        scriptstr += "# Experiment setup\n"
+
+        scriptstr += str(Mkdir(rundir, make_parents=True)) + "\n"
+        scriptstr += str(Cd(rundir)) + "\n"
+
         for infile in self.cmd.inputs:
-            f.write(str(Cp(infile, "."))+"\n")
+            scriptstr += str(Cp(infile, ".")) + "\n"
         
         # Execute the experiment components
-        f.write("\n# Run experiment\n")
-        f.write(str(self.cmd)+"\n\n")
+        scriptstr += "\n# Run experiment\n"
+        scriptstr += str(self.cmd) + "\n\n"
         
-        # Exfill the experiment output files we care about, including runscript and output
-        f.write("# Collect output files\n")
+        # Exfill the experiment output files and clean up the rundir if needed
+        scriptstr += "# Collect output files and clean up\n"
         for outfile in self.cmd.outputs:
-            f.write(str(Cp(outfile, self.destdir))+"\n")
-        f.write(str(Cp(fname, self.destdir))+"\n")
-        f.write(str(Cp(Exp.out, self.destdir))+"\n")
-        f.write(str(Cp(Exp.err, self.destdir))+"\n")
+            scriptstr += str(Cp(outfile, self.destdir)) + "\n"
+        
+        if rm_rundir:
+            scriptstr += str(Rm(rundir)) + "\n"
 
-        if f != sys.stdout:
-            f.close()
-            chmod(fname, 0755)
+        return scriptstr
 
-    def run(self, expname=Exp.defname, rm_rundir=True):
-        # Determine and create the experiment directory
-        rundir = path.join(Exp.rundir, expname + "." + str(int(time())))
-        fname  = path.join(rundir, Exp.runsh)
-        if not path.exists(rundir):
-            makedirs(rundir)
-
-        # Create the results directory as necessary, deleting any previous contents
+    
+    def run(self, rm_rundir=True):
+        # Create the results directory, deleting any previous contents
         if path.exists(self.destdir):
             shutil.rmtree(self.destdir)
         makedirs(self.destdir)
         
         # Open the output, error and timing file handles for call
-        out = open(path.join(rundir, Exp.out), 'w')
-        err = open(path.join(rundir, Exp.err), 'w')
+        out = open(path.join(self.destdir, Exp.out), 'w')
+        err = open(path.join(self.destdir, Exp.err), 'w')
         timing = open(path.join(self.destdir, Exp.timing), 'w')
 
-        # Write the runscript in the exp dir
-        self.write_runscript(fname)
-        
+        # Write the runscript
+        fname  = path.join(self.destdir, Exp.runsh)
+        with open(fname, "w") as f:
+            f.write(self.make_runscript(rm_rundir=rm_rundir))
+        chmod(fname, 0755)
+
         # Execute call and time the result
         start = datetime.now()
-        call(fname, stdout=out, stderr=err, cwd=rundir)
+        call(fname, stdout=out, stderr=err)
         runtime = datetime.now() - start
         timing.write(str(runtime)+"\n")
 
-        # Clean up, close file descriptors and delete the rundir (if needed)
+        # Clean up and close file descriptors
         out.close()
         err.close()
         timing.close()
-        if rm_rundir:
-            shutil.rmtree(rundir)
         
 
-    def queue(self):
-        pass
+    def queue(self, nodes=1, ppn=1, mem="4096m", wtime="480:00:00"):
+        
+        # Write the PBS script preamble
+        pbsheader = (Exp.shebang
+            + "\n#PBS -N {name}\n"
+            + "#PBS -l nodes={nodes}:ppn={ppn},mem={mem}\n"
+            + "#PBS -l walltime={wtime}\n"
+            + "#PBS -o {qout}\n#PBS -e {qerr}"
+            + ""
+        ).format(name=name, nodes=nodes, ppn=ppn, mem=mem, wtime=wtime,
+            qout=path.join(self.destdir, Exp.out), 
+            qerr=path.join(self.destdir, Exp.err)
+        )
+        
+        # Create the results directory, deleting any previous contents
+        if path.exists(self.destdir):
+            shutil.rmtree(self.destdir)
+        makedirs(self.destdir)
+        
+        # Write the runscript
+        fname  = path.join(self.destdir, Exp.runsh)
+        with open(fname, "w") as f:
+            f.write(self.make_runscript(
+                preamble=pbsheader, 
+                rm_rundir=rm_rundir
+            ))
+        
+        chmod(fname, 0755)
+        
+        # Submit to the queue
+        call(["qsub", fname])
