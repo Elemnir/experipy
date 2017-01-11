@@ -1,7 +1,7 @@
 from os import path
 
 from experipy.system import PythonScript
-from experipy.exp    import Experiment
+from experipy        import Experiment
 
 if __name__ == "__main__":
     testscript = path.join(path.dirname(__file__), "test.py")
