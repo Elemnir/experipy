@@ -1,9 +1,16 @@
-# experipy
+==========
+ Experipy
+==========
+
 A framework for writing and running Computational Science experiments.
 
 Experipy provides a composable grammar for automatically writing scripts and a tool which can then execute them. Support for PBS script based queueing is (mostly) implemented.
 
-## A simple example
+------------------
+ A Simple Example
+------------------
+
+::
 
     from experipy.exp       import Experiment
     from experipy.grammar   import Executable

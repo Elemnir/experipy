@@ -49,7 +49,7 @@ setup(
     author_email=find_meta("email"),
     maintainer=find_meta("author"),
     maintainer_email=find_meta("email"),
-    long_description=read("README.md"),
+    long_description=read("README.rst"),
     packages=PACKAGES,
     package_dir={'':'src'},
     classifiers=CLASSIFIERS,
