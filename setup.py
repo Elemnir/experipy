@@ -7,11 +7,11 @@ NAME = 'experipy'
 PACKAGES = find_packages(where='src')
 META_PATH = os.path.join("src", "experipy", "__init__.py")
 CLASSIFIERS = [
-    "Development Status :: 2 - Pre-Alpha",
+    "Development Status :: 3 - Alpha",
     "Intended Audience :: Science/Research",
     "Natural Language :: English",
     "License :: OSI Approved :: BSD License",
-    "Operating System :: POSIX",
+    "Operating System :: POSIX :: Linux",
     "Programming Language :: Python",
     "Programming Language :: Python :: 2",
     "Programming Language :: Python :: 2.6",
