@@ -10,7 +10,7 @@ from .grammar   import ElementBase
 from .system    import Cd, Cp, Mkdir
 from .utils     import Namespace
 
-Exp = Namespace(
+Exp = Namespace("Exp",
     runsh   = "run.sh",
     shebang = "#!/bin/bash",
     rundir  = "/tmp",
@@ -54,7 +54,7 @@ class Experiment(object):
         scriptstr += str(Cd(rundir)) + "\n"
 
         for infile in self.cmd.inputs:
-            scriptstr += str(Cp(infile, ".")) + "\n"
+            scriptstr += str(Cp(path.abspath(infile), ".")) + "\n"
         
         # Execute the experiment components
         scriptstr += "\n# Run experiment\n"

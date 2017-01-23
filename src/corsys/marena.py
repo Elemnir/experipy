@@ -8,7 +8,7 @@ from .environment       import Env
 
 ########## Constants and helper functions ##########
 
-Marena = Namespace(
+Marena = Namespace("Marena",
     path = "marena",
     exe  = "marena",
     lib  = "libmarena.so",

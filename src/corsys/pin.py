@@ -8,7 +8,7 @@ from .environment       import Env
 
 ########## Constants and helper functions ##########
 
-Pin = Namespace(
+Pin = Namespace("Pin",
     path = "pin-2.14",
     exe  = "pin.sh",
 )

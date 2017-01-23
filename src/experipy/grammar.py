@@ -35,6 +35,16 @@ class Wrapper(ElementBase):
         elif tokens.wrapped not in exe.opts:
             raise GrammarViolation("exe must have a '{}' option".format(tokens.wrapped))
         
+        inputs = kwargs.get("inputs", [])
+        if wrapped.inputs:
+            inputs.extend(wrapped.inputs)
+        kwargs["inputs"] = inputs
+
+        outputs = kwargs.get("outputs", [])
+        if wrapped.outputs:
+            outputs.extend(wrapped.outputs)
+        kwargs["outputs"] = outputs
+        
         super(Wrapper, self).__init__(**kwargs)
         self.exe = exe
         self.wrapped = wrapped
@@ -49,6 +59,18 @@ class Pipeline(ElementBase):
             if not (isinstance(part, Executable) or isinstance(part, Wrapper)):
                 raise GrammarViolation("'{}' is not an instance of Executable or Wrapper".format(part))
         
+        inputs = kwargs.get("inputs", [])
+        for part in parts:
+            if part.inputs:
+                inputs.extend(part.inputs)
+        kwargs["inputs"] = inputs
+
+        outputs = kwargs.get("outputs", [])
+        for part in parts:
+            if part.outputs:
+                outputs.extend(part.outputs)
+        kwargs["outputs"] = outputs
+        
         super(Pipeline, self).__init__(**kwargs)
         self.parts = parts
 
@@ -61,7 +83,19 @@ class Group(ElementBase):
         for part in parts:
             if not (isinstance(part, ElementBase)):
                 raise GrammarViolation("'{}' is not an instance of ElementBase".format(part))
+        
+        inputs = kwargs.get("inputs", [])
+        for part in parts:
+            if part.inputs:
+                inputs.extend(part.inputs)
+        kwargs["inputs"] = inputs
 
+        outputs = kwargs.get("outputs", [])
+        for part in parts:
+            if part.outputs:
+                outputs.extend(part.outputs)
+        kwargs["outputs"] = outputs
+ 
         super(Group, self).__init__(**kwargs)
         self.parts = parts
 

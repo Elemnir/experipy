@@ -38,3 +38,7 @@ class PythonScript(Executable):
 
         super(PythonScript, self).__init__(pythonexe, [script] + sopts, **kwargs)
 
+class JavaApp(Executable):
+    def __init__(self, jarfile, popts=[], javaexe="java", jopts=[], **kwargs):
+        jarfile = path.abspath(jarfile)
+        super(JavaJar, self).__init__(javaexe, jopts + ["-jar", jarfile] + popts, **kwargs)

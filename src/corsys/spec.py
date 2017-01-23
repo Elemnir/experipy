@@ -7,7 +7,7 @@ from .environment       import Env
 
 ########## Constants and helper functions ##########
 
-Spec = Namespace(
+Spec = Namespace("Spec",
     path = "benchmarks/cpu2006",
 )
 
