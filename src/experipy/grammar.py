@@ -17,10 +17,15 @@ class ElementBase(object):
 
 
 class Executable(ElementBase):
-    def __init__(self, prog, opts=[], **kwargs):
+    def __init__(self, prog, opts=None, **kwargs):
         super(Executable, self).__init__(**kwargs)
         self.prog = prog
-        self.opts = opts
+        self.opts = []
+        if opts != None:
+            self.opts.extend(opts)
+
+        if "wait" in kwargs:
+            self.opts.append("&")
 
     def __str__(self):
         return "{0} {1}".format(self.prog, " ".join(map(str,self.opts)))
@@ -45,6 +50,9 @@ class Wrapper(ElementBase):
             outputs.extend(wrapped.outputs)
         kwargs["outputs"] = outputs
         
+        if "wait" in kwargs:
+            exe.opts.append("&")
+
         super(Wrapper, self).__init__(**kwargs)
         self.exe = exe
         self.wrapped = wrapped
