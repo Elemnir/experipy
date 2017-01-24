@@ -20,13 +20,20 @@ def marenapath():
 ####################################################
 
 class MarenaRun(Wrapper):
-    def __init__(self, wrapped, hotapfile, 
+    def __init__(self, wrapped, hotapfile=None, 
                  libmarena=path.join(marenapath(), Marena.lib), 
-                 opts=[], **kwargs):
+                 opts=None, **kwargs):
+        
+        if opts == None:
+            opts = []
+
+        if hotapfile:
+            opts.extend(["-f", hotapfile])
+
         super(MarenaRun, self).__init__(
             Executable(
                 path.join(marenapath(), Marena.exe),
-                ["-l "+libmarena, "-f "+hotapfile] + opts + ["--", tokens.wrapped]
+                ["-l ", libmarena] + opts + ["--", tokens.wrapped]
             ), wrapped, **kwargs
         )
 

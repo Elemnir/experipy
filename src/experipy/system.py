@@ -19,7 +19,7 @@ class Mkdir(Executable):
 
 class Mkfifo(Executable):
     def __init__(self, pipename):
-        super(Mkdir, self).__init__("mkfifo", [pipename])
+        super(Mkfifo, self).__init__("mkfifo", [pipename])
 
 class Rm(Executable):
     def __init__(self, *files):
@@ -41,4 +41,4 @@ class PythonScript(Executable):
 class JavaApp(Executable):
     def __init__(self, jarfile, popts=[], javaexe="java", jopts=[], **kwargs):
         jarfile = path.abspath(jarfile)
-        super(JavaJar, self).__init__(javaexe, jopts + ["-jar", jarfile] + popts, **kwargs)
+        super(JavaApp, self).__init__(javaexe, jopts + ["-jar", jarfile] + popts, **kwargs)

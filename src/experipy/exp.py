@@ -109,7 +109,7 @@ class Experiment(object):
             + "#PBS -l walltime={wtime}\n"
             + "#PBS -o {qout}\n#PBS -e {qerr}"
             + ""
-        ).format(name=name, nodes=nodes, ppn=ppn, mem=mem, wtime=wtime,
+        ).format(name=self.expname, nodes=nodes, ppn=ppn, mem=mem, wtime=wtime,
             qout=path.join(self.destdir, Exp.out), 
             qerr=path.join(self.destdir, Exp.err)
         )
