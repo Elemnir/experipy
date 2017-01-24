@@ -23,7 +23,7 @@ class Executable(ElementBase):
         self.opts = opts
 
     def __repr__(self):
-        return "{0} {1}".format(self.prog, " ".join(self.opts))
+        return "{0} {1}".format(self.prog, " ".join(map(repr,self.opts)))
 
 
 class Wrapper(ElementBase):
