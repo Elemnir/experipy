@@ -22,8 +22,8 @@ class Executable(ElementBase):
         self.prog = prog
         self.opts = opts
 
-    def __repr__(self):
-        return "{0} {1}".format(self.prog, " ".join(map(repr,self.opts)))
+    def __str__(self):
+        return "{0} {1}".format(self.prog, " ".join(map(str,self.opts)))
 
 
 class Wrapper(ElementBase):
@@ -49,8 +49,8 @@ class Wrapper(ElementBase):
         self.exe = exe
         self.wrapped = wrapped
 
-    def __repr__(self):
-        return str(self.exe).replace(tokens.wrapped, repr(self.wrapped))
+    def __str__(self):
+        return str(self.exe).replace(tokens.wrapped, str(self.wrapped))
 
 
 class Pipeline(ElementBase):
@@ -74,8 +74,8 @@ class Pipeline(ElementBase):
         super(Pipeline, self).__init__(**kwargs)
         self.parts = parts
 
-    def __repr__(self):
-        return " | ".join(map(repr,self.parts))
+    def __str__(self):
+        return " | ".join(map(str,self.parts))
 
 
 class Group(ElementBase):
@@ -99,5 +99,5 @@ class Group(ElementBase):
         super(Group, self).__init__(**kwargs)
         self.parts = parts
 
-    def __repr__(self):
-        return "\n".join(map(repr,self.parts))
+    def __str__(self):
+        return "\n".join(map(str,self.parts))
