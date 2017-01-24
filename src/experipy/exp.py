@@ -7,7 +7,7 @@ from subprocess import call
 from time       import time
 
 from .grammar   import ElementBase
-from .system    import Cd, Cp, Mkdir
+from .system    import Cd, Cp, Mkdir, Rm
 from .utils     import Namespace
 
 Exp = Namespace("Exp",
