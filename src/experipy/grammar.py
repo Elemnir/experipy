@@ -32,7 +32,7 @@ class Executable(ElementBase):
 
 
 class Wrapper(ElementBase):
-    def __init__(self, exe, wrapped, wait=True **kwargs):
+    def __init__(self, exe, wrapped, wait=True, **kwargs):
         if not isinstance(exe, Executable):
             raise GrammarViolation("exe must be an instance of Executable")
         elif not (isinstance(wrapped, Executable) or isinstance(wrapped, Wrapper)):
