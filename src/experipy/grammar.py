@@ -17,14 +17,14 @@ class ElementBase(object):
 
 
 class Executable(ElementBase):
-    def __init__(self, prog, opts=None, **kwargs):
+    def __init__(self, prog, opts=None, wait=True, **kwargs):
         super(Executable, self).__init__(**kwargs)
         self.prog = prog
         self.opts = []
         if opts != None:
             self.opts.extend(opts)
 
-        if "wait" in kwargs:
+        if wait == False:
             self.opts.append("&")
 
     def __str__(self):
@@ -32,7 +32,7 @@ class Executable(ElementBase):
 
 
 class Wrapper(ElementBase):
-    def __init__(self, exe, wrapped, **kwargs):
+    def __init__(self, exe, wrapped, wait=True **kwargs):
         if not isinstance(exe, Executable):
             raise GrammarViolation("exe must be an instance of Executable")
         elif not (isinstance(wrapped, Executable) or isinstance(wrapped, Wrapper)):
@@ -50,7 +50,7 @@ class Wrapper(ElementBase):
             outputs.extend(wrapped.outputs)
         kwargs["outputs"] = outputs
         
-        if "wait" in kwargs:
+        if wait == False:
             exe.opts.append("&")
 
         super(Wrapper, self).__init__(**kwargs)
