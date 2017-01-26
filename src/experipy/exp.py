@@ -1,3 +1,11 @@
+"""
+    experipy.exp
+    ~~~~~~~~~~~~
+
+    This module provides the Experiment class for running compositions in the
+    grammar, as well as the Exp Namespace for controlling and configuring 
+    Experiment behavior.
+"""
 import shutil
 import sys
 
@@ -6,7 +14,7 @@ from os         import chmod, makedirs, path
 from subprocess import call
 from time       import time
 
-from .grammar   import ElementBase
+from .grammar   import Element
 from .system    import Cd, Cp, Mkdir, Rm
 from .utils     import Namespace
 
@@ -26,9 +34,30 @@ class ExpError(Exception):
 
 
 class Experiment(object):
+    """Experiment objects perform the generation and execution of runscripts.
+    
+    Once a composition has been specified in the grammar, wrapping it in an
+    Experiment allows the user to generate a shell scripts as a string using
+    the make_runscript method. The run and queue methods provide mechanisms for
+    executing the generated scripts.
+
+    Parameters
+    ----------
+    cmd : experipy.Element
+        A composition of experipy Elements such as Executable and Group, which
+        defines the behavior the user wishes the Experiment to perform.
+    expname : str
+        A name to be used for identifying the experiment. Defaults to 
+        Exp.defname, which defaults to "exp"
+    destdir : str
+        An optional path to a directory where the results from running the
+        experiment should be stored. If None, expname will be used.
+
+    """
+
     def __init__(self, cmd, expname=Exp.defname, destdir=None):
-        if not isinstance(cmd, ElementBase):
-            raise ExpError("'{}' is not an instance of ElementBase".format(cmd))
+        if not isinstance(cmd, Element):
+            raise ExpError("'{}' is not an instance of Element".format(cmd))
 
         self.cmd     = cmd
         self.expname = expname
@@ -40,7 +69,24 @@ class Experiment(object):
     
 
     def make_runscript(self, preamble=Exp.shebang, rm_rundir=True):
-        
+        """Create a string containing a complete shell script.
+
+        Parameters
+        ----------
+        preamble : str
+            The first line(s) of the runscript. Defaults to Exp.shebang, which
+            defaults to "#!/bin/bash".
+        rm_rundir : bool
+            If True, a line deleting the experiment's working directory will
+            be added to the end of the script. Defaults to True.
+
+        Returns
+        -------
+        str
+            A run script as described by the composition provided to the 
+            Experiment.
+        """
+
         # Name of the temporary directory for the experiment
         rundir = path.join(Exp.rundir, self.expname + "." + str(int(time())))
         
@@ -72,6 +118,20 @@ class Experiment(object):
 
     
     def run(self, rm_rundir=True):
+        """Execute the experiment as a subprocess of the current process.
+
+        Generates a run script, writes that script to the results directory,
+        and then executes the script as a subprocess of the current process.
+        The time the script takes to execute, including loader time, is 
+        recorded. This function blocks until the experiment is complete.
+
+        Parameters
+        ----------
+        rm_rundir : bool
+            If True, the directory created for running the experiment will be
+            deleted at the end of the experiment. Defaults to True.
+        """
+
         # Create the results directory, deleting any previous contents
         if path.exists(self.destdir):
             shutil.rmtree(self.destdir)
@@ -101,7 +161,26 @@ class Experiment(object):
         
 
     def queue(self, nodes=1, ppn=1, mem="4096m", wtime="480:00:00"):
+        """Submit the experiment to a job queuing system as a PBS script.
         
+        Generates a script with a PBS script header, writes the script to the 
+        results directory, and then submits it to the job queuing system by
+        running the command qsub as a subprocess.
+
+        Parameters
+        ----------
+        nodes : int
+            The number of nodes to request in the PBS script. Defaults to 1.
+        ppn : int
+            The number of processors per node to request in the PBS script.
+            Defaults to 1.
+        mem : str
+            The amount of memory to request in the PBS script. Defaults to 
+            "4096m".
+        wtime : str
+            The amount of wall time to request in the PBS script.
+        """
+       
         # Write the PBS script preamble
         pbsheader = (Exp.shebang
             + "\n#PBS -N {name}\n"

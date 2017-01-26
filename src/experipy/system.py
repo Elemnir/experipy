@@ -1,3 +1,10 @@
+"""
+    experipy.system
+    ~~~~~~~~~~~~~~~
+
+    This module provides a number of system and shell tools for helping to
+    specify common tasks within the experipy grammar.
+"""
 from os         import path
 
 from .grammar   import Executable
