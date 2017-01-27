@@ -14,9 +14,6 @@ tokens = Namespace(
     wrapped = r"[[wrapped]]",
 )
 
-class GrammarViolation(Exception):
-    pass
-
 
 class Element(object):
     """The Element class forms the grammar's base class.
@@ -94,11 +91,11 @@ class Wrapper(Element):
 
     def __init__(self, exe, wrapped, wait=True, **kwargs):
         if not isinstance(exe, Executable):
-            raise GrammarViolation("exe must be an instance of Executable")
+            raise TypeError("exe must be an instance of Executable")
         elif not (isinstance(wrapped, Executable) or isinstance(wrapped, Wrapper)):
-            raise GrammarViolation("wrapped must be an instance of Executable or Wrapper")
+            raise TypeError("wrapped must be an instance of Executable or Wrapper")
         elif tokens.wrapped not in exe.opts:
-            raise GrammarViolation("exe must have a '{}' option".format(tokens.wrapped))
+            raise TypeError("exe must have a '{}' option".format(tokens.wrapped))
         
         inputs = kwargs.get("inputs", [])
         if wrapped.inputs:
@@ -140,7 +137,7 @@ class Pipeline(Element):
     def __init__(self, *parts, **kwargs):
         for part in parts:
             if not (isinstance(part, Executable) or isinstance(part, Wrapper)):
-                raise GrammarViolation("'{}' is not an instance of Executable or Wrapper".format(part))
+                raise TypeError("'{}' is not an instance of Executable or Wrapper".format(part))
         
         inputs = kwargs.get("inputs", [])
         for part in parts:
@@ -181,7 +178,7 @@ class Group(Element):
     def __init__(self, *parts, **kwargs):
         for part in parts:
             if not (isinstance(part, Element)):
-                raise GrammarViolation("'{}' is not an instance of Element".format(part))
+                raise TypeError("'{}' is not an instance of Element".format(part))
         
         inputs = kwargs.get("inputs", [])
         for part in parts:

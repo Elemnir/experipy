@@ -29,10 +29,6 @@ Exp = Namespace("Exp",
 )
 
 
-class ExpError(Exception):
-    pass
-
-
 class Experiment(object):
     """Experiment objects perform the generation and execution of runscripts.
     
@@ -57,7 +53,7 @@ class Experiment(object):
 
     def __init__(self, cmd, expname=Exp.defname, destdir=None):
         if not isinstance(cmd, Element):
-            raise ExpError("'{}' is not an instance of Element".format(cmd))
+            raise TypeError("'{}' is not an instance of Element".format(cmd))
 
         self.cmd     = cmd
         self.expname = expname

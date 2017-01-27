@@ -1,8 +1,7 @@
 from os                 import path
 
 from experipy.utils     import Namespace
-from experipy.grammar   import (Executable, Wrapper, Group, 
-                                GrammarViolation, tokens)
+from experipy.grammar   import Executable, Wrapper, Group, tokens
 
 from .environment       import Env
 
