@@ -17,19 +17,26 @@ def pinpath():
 
 ####################################################
 
-class PinTool(Wrapper):
-    def __init__(self, tool, target, popts=[], topts=[], **kwargs):
-        super(PinTool, self).__init__(
-            Executable(
-                path.join(pinpath(), Pin.exe),
-                popts + ["-t "+tool] + topts + ["--", tokens.wrapped]
-            ), target, **kwargs
-        )
+def pintool(tool, target, popts=[], topts=[], **kwargs):
+    return Wrapper(
+        path.join(pinpath(), Pin.exe),
+        popts + ["-t "+tool] + topts + ["--", tokens.wrapped],
+        target, **kwargs
+    )
 
-class Memtracer(PinTool):
-    def __init__(self, target, popts=["-follow-execv"], topts=[], **kwargs):
-        super(Memtracer, self).__init__(
-            path.join(pinpath(), "source/tools/memtracer/obj-intel64/", "memtracer.so"),
-            target, popts, topts, **kwargs
-        )
+
+def memtracer(target, popts=["-follow-execv"], topts=[], **kwargs):
+    """Returns a Wrapper describing a Memtracer run"""
+    outfiles = kwargs.get("outputs", [])
+    outfiles.extend([
+        "memtracer.out", "meminfo.txt", "malloc_trace.out",
+        "ap_info.out", "ap_map.out", "pin.log"
+    ])
+
+    return pintool(
+        path.join(pinpath(), "source", "tools", 
+            "memtracer", "obj-intel64", "memtracer.so"
+        ),
+        target, popts, topts, outputs=outfiles, **kwargs
+    )
 

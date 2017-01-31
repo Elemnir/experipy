@@ -6,6 +6,8 @@
     grammar, as well as the Exp Namespace for controlling and configuring 
     Experiment behavior.
 """
+from __future__ import absolute_import
+
 import shutil
 import sys
 
@@ -14,9 +16,10 @@ from os         import chmod, makedirs, path
 from subprocess import call
 from time       import time
 
+from .system    import cd, cp, mkdir, rm
 from .grammar   import Element
-from .system    import Cd, Cp, Mkdir, Rm
 from .utils     import Namespace
+
 
 Exp = Namespace("Exp",
     runsh   = "run.sh",
@@ -48,7 +51,6 @@ class Experiment(object):
     destdir : str
         An optional path to a directory where the results from running the
         experiment should be stored. If None, expname will be used.
-
     """
 
     def __init__(self, cmd, expname=Exp.defname, destdir=None):
@@ -92,11 +94,11 @@ class Experiment(object):
         # Collect experiment input files
         scriptstr += "# Experiment setup\n"
 
-        scriptstr += str(Mkdir(rundir, make_parents=True)) + "\n"
-        scriptstr += str(Cd(rundir)) + "\n"
+        scriptstr += str(mkdir(rundir, make_parents=True)) + "\n"
+        scriptstr += str(cd(rundir)) + "\n"
 
-        for infile in self.cmd.inputs:
-            scriptstr += str(Cp(path.abspath(infile), ".")) + "\n"
+        for infile in self.cmd.inputs():
+            scriptstr += str(cp(path.abspath(infile), ".")) + "\n"
         
         # Execute the experiment components
         scriptstr += "\n# Run experiment\n"
@@ -104,11 +106,11 @@ class Experiment(object):
         
         # Exfill the experiment output files and clean up the rundir if needed
         scriptstr += "# Collect output files and clean up\n"
-        for outfile in self.cmd.outputs:
-            scriptstr += str(Cp(outfile, self.destdir)) + "\n"
+        for outfile in self.cmd.outputs():
+            scriptstr += str(cp(outfile, self.destdir)) + "\n"
         
         if rm_rundir:
-            scriptstr += str(Rm(rundir)) + "\n"
+            scriptstr += str(rm(rundir)) + "\n"
 
         return scriptstr
 

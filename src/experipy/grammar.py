@@ -31,8 +31,18 @@ class Element(object):
     """
 
     def __init__(self, **kwargs):
-        self.inputs = kwargs.get("inputs", [])
-        self.outputs = kwargs.get("outputs", [])
+        self._inputs = kwargs.get("inputs", [])
+        self._outputs = kwargs.get("outputs", [])
+
+    def inputs(self):
+        """Generator which yields the Element's input files"""
+        for item in self._inputs:
+            yield item
+
+    def outputs(self):
+        """Generator which yields the Element's output files"""
+        for item in self._outputs:
+            yield item
 
 
 class Executable(Element):
@@ -66,22 +76,25 @@ class Executable(Element):
         return "{0} {1}".format(self.prog, " ".join(map(str,self.opts)))
 
 
-class Wrapper(Element):
-    """Wrapper objects allow one program to wrap another.
+class Wrapper(Executable):
+    """Wrapper objects allow specification of a program which wraps another.
 
-    Provides a way to specify programs such as GDB or Valgrind, which wrap
-    around another program to alter or observe its execution.
+    Wrappers are a subclass of Executable which allow specification of programs
+    such as GDB or Valgrind, which wrap around another program to alter or 
+    observe its execution.
 
     Parameters
     ----------
-    exe : experipy.Executable
-        The wrapping Executable. Must provide a '[[wrapped]]' option which 
-        indicates where the wrapped Element should be placed when rendering
-        the script.
-    wrapped : experipy.Executable or experipy.Wrapper
-        The wrapped Executable or Wrapper. Inputs and outputs specified to 
-        exe and wrapped will also be included in the resultant object's inputs 
-        and outputs.
+    prog : str
+        The name of the program executable.
+    opts : list
+        A list of command line options to pass to the program. Must minimally
+        contain a string having the value '[[wrapped]]', which indicates where 
+        the wrapped executable should be inserted into the wrapping 
+        executable's arguments.
+    wrapped : experipy.Executable
+        The wrapped Executable. Inputs and outputs specified to wrapped will be
+        included in the resultant object's inputs and outputs.
     wait : bool
         If False, a '&' will be appended to the argument list, indicating to
         the shell that it should background the program instead of blocking on
@@ -89,34 +102,34 @@ class Wrapper(Element):
 
     """
 
-    def __init__(self, exe, wrapped, wait=True, **kwargs):
-        if not isinstance(exe, Executable):
-            raise TypeError("exe must be an instance of Executable")
-        elif not (isinstance(wrapped, Executable) or isinstance(wrapped, Wrapper)):
-            raise TypeError("wrapped must be an instance of Executable or Wrapper")
-        elif tokens.wrapped not in exe.opts:
-            raise TypeError("exe must have a '{}' option".format(tokens.wrapped))
+    def __init__(self, prog, opts, wrapped, **kwargs):
+        if not isinstance(wrapped, Executable):
+            raise TypeError("wrapped must be an instance of Executable")
+        elif not isinstance(opts, list) or tokens.wrapped not in opts:
+            raise TypeError("opts must be a list containing '{}'".format(tokens.wrapped))
         
-        inputs = kwargs.get("inputs", [])
-        if wrapped.inputs:
-            inputs.extend(wrapped.inputs)
-        kwargs["inputs"] = inputs
-
-        outputs = kwargs.get("outputs", [])
-        if wrapped.outputs:
-            outputs.extend(wrapped.outputs)
-        kwargs["outputs"] = outputs
-        
-        if wait == False:
-            exe.opts.append("&")
-
-        super(Wrapper, self).__init__(**kwargs)
-        self.exe = exe
+        super(Wrapper, self).__init__(prog, opts, **kwargs)
         self.wrapped = wrapped
 
     def __str__(self):
         """Render the Wrapper as it will appear in the shell script."""
-        return str(self.exe).replace(tokens.wrapped, str(self.wrapped))
+        return super(Wrapper, self).__str__().replace(
+            tokens.wrapped, str(self.wrapped)
+        )
+    
+    def inputs(self):
+        """Generator which yields the Wrapper's input files"""
+        for item in super(Wrapper, self).inputs():
+            yield item
+        for item in self.wrapped.inputs():
+            yield item
+    
+    def outputs(self):
+        """Generator which yields the Wrapper's output files"""
+        for item in super(Wrapper, self).outputs():
+            yield item
+        for item in self.wrapped.outputs():
+            yield item
 
 
 class Pipeline(Element):
@@ -136,27 +149,31 @@ class Pipeline(Element):
 
     def __init__(self, *parts, **kwargs):
         for part in parts:
-            if not (isinstance(part, Executable) or isinstance(part, Wrapper)):
-                raise TypeError("'{}' is not an instance of Executable or Wrapper".format(part))
-        
-        inputs = kwargs.get("inputs", [])
-        for part in parts:
-            if part.inputs:
-                inputs.extend(part.inputs)
-        kwargs["inputs"] = inputs
-
-        outputs = kwargs.get("outputs", [])
-        for part in parts:
-            if part.outputs:
-                outputs.extend(part.outputs)
-        kwargs["outputs"] = outputs
-        
+            if not isinstance(part, Executable):
+                raise TypeError("'{}' is not an instance of Executable".format(part))
+       
         super(Pipeline, self).__init__(**kwargs)
         self.parts = parts
 
     def __str__(self):
         """Render the Pipeline as it will appear in the shell script."""
         return " | ".join(map(str,self.parts))
+    
+    def inputs(self):
+        """Generator which yields the Pipeline's input files"""
+        for item in super(Pipeline, self).inputs():
+            yield item
+        for part in self.parts:
+            for item in part.inputs():
+                yield item
+    
+    def outputs(self):
+        """Generator which yields the Pipeline's output files"""
+        for item in super(Pipeline, self).outputs():
+            yield item
+        for part in self.parts:
+            for item in part.outputs():
+                yield item
 
 
 class Group(Element):
@@ -175,26 +192,31 @@ class Group(Element):
         to the individual parts will be included in the Group's inputs and 
         outputs.
     """
+
     def __init__(self, *parts, **kwargs):
         for part in parts:
             if not (isinstance(part, Element)):
                 raise TypeError("'{}' is not an instance of Element".format(part))
-        
-        inputs = kwargs.get("inputs", [])
-        for part in parts:
-            if part.inputs:
-                inputs.extend(part.inputs)
-        kwargs["inputs"] = inputs
 
-        outputs = kwargs.get("outputs", [])
-        for part in parts:
-            if part.outputs:
-                outputs.extend(part.outputs)
-        kwargs["outputs"] = outputs
- 
         super(Group, self).__init__(**kwargs)
         self.parts = parts
 
     def __str__(self):
         """Render the Group as it will appear in the shell script."""
         return "\n".join(map(str,self.parts))
+
+    def inputs(self):
+        """Generator which yields the Group's input files"""
+        for item in super(Group, self).inputs():
+            yield item
+        for part in self.parts:
+            for item in part.inputs():
+                yield item
+    
+    def outputs(self):
+        """Generator which yields the Group's output files"""
+        for item in super(Group, self).outputs():
+            yield item
+        for part in self.parts:
+            for item in part.outputs():
+                yield item
