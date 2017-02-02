@@ -36,8 +36,8 @@ class Experiment(object):
     """Experiment objects perform the generation and execution of runscripts.
     
     Once a composition has been specified in the grammar, wrapping it in an
-    Experiment allows the user to generate a shell scripts as a string using
-    the make_runscript method. The run and queue methods provide mechanisms for
+    Experiment allows the user to generate a shell script as a string using the
+    make_runscript method. The run and queue methods provide mechanisms for
     executing the generated scripts.
 
     Parameters
@@ -47,7 +47,7 @@ class Experiment(object):
         defines the behavior the user wishes the Experiment to perform.
     expname : str
         A name to be used for identifying the experiment. Defaults to 
-        Exp.defname, which defaults to "exp"
+        Exp.defname, which defaults to "exp".
     destdir : str
         An optional path to a directory where the results from running the
         experiment should be stored. If None, expname will be used.
@@ -67,7 +67,7 @@ class Experiment(object):
     
 
     def make_runscript(self, preamble=Exp.shebang, rm_rundir=True):
-        """Create a string containing a complete shell script.
+        """Create a string containing the experiment rendered as a shell script.
 
         Parameters
         ----------
