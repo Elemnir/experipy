@@ -200,8 +200,7 @@ class Experiment(object):
         fname  = path.join(self.destdir, Exp.runsh)
         with open(fname, "w") as f:
             f.write(self.make_runscript(
-                preamble=pbsheader, 
-                rm_rundir=rm_rundir
+                preamble=pbsheader 
             ))
         
         chmod(fname, 0755)
