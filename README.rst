@@ -35,14 +35,15 @@ This will run the program ``echo`` with the argument ``Hello World`` in a direct
     experipy.exp
         Contains the Experiment class, instances of which accepts a composition in the grammar, and can generate and execute a shell script from it.
 
+    experipy.utils
+        Contains the Namespace class, a tool which allows setting and configuring collections of constant values like file names and paths. Constants defined in Namespaces can be overridden by setting a new value in ``~/.experipyrc``.
+
     corsys
         Tools used by the Corsys research group at UTK, will likely be separated at some point, but serves as a useful example (Heavily WIP)
 
 -----------------------
  Features In The Works
 -----------------------
-
-- Develop a means for defining configurations
 
 - Expand ``experipy.system`` to include more standard command line tools
 

@@ -55,7 +55,6 @@ class Namespace(object):
         self.name = name
 
         if name != None:
-
             self._register(name, self)
 
             # Override the defaults if they are specified in the config file
