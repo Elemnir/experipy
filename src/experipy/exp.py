@@ -144,7 +144,8 @@ class Experiment(object):
         fname  = path.join(self.destdir, Exp.runsh)
         with open(fname, "w") as f:
             f.write(self.make_runscript(rm_rundir=rm_rundir))
-        chmod(fname, 0755)
+
+        chmod(fname, 0o755)
 
         # Execute call and time the result
         start = datetime.now()
@@ -203,7 +204,7 @@ class Experiment(object):
                 preamble=pbsheader 
             ))
         
-        chmod(fname, 0755)
+        chmod(fname, 0o755)
         
         # Submit to the queue
         call(["qsub", fname])
