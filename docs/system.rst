@@ -1,8 +1,8 @@
 3. experipy.system - System tools in the grammar
 ************************************************
 
-.. automodule:: experipy.system
-   :members:
+This module provides a number of system and shell tools for helping to specify 
+common tasks within the experipy grammar.
 
 .. autofunction:: experipy.system.cd
 
