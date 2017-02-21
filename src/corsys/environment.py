@@ -1,15 +1,18 @@
-from os import getenv
+import os
+import sys
+
 from experipy.utils import Namespace
 
-projectdir = getenv("XPS_PROJDIR", "")
-if not projectdir:
-    projectdir = raw_input("XPS_PROJDIR not set, provide the project directory path\n>>> ")
+if sys.version_info[0] == 2:
+    input = raw_input
 
-resultdir = getenv("XPS_VOLDIR", "")
-if not resultdir:
-    resultdir = raw_input("XPS_VOLDIR not set, provide the result directory path\n>>> ")
+def getenv_or_prompt(name):
+    val = os.getenv(name, "")
+    if not val:
+        val = input("Environment Variable not set: {}\n>>> ".format(name))
+    return val
 
 Env = Namespace(
-    projdir = projectdir,
-    resdir  = resultdir,
+    projdir = getenv_or_prompt("XPS_PROJDIR"),
+    resdir  = getenv_or_prompt("XPS_VOLDIR"),
 )
