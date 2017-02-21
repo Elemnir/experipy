@@ -4,7 +4,7 @@
 
 A framework for writing and running Computational Science experiments.
 
-Experipy provides a composable grammar for automatically writing scripts and a tool which can then execute them. Support for PBS script based queueing is (mostly) implemented.
+``experipy`` provides a composable grammar for automating experiment script generation and a tool which can then execute those scripts. Supports PBS script based queueing.
 
 ------------------
  A Simple Example
@@ -22,24 +22,20 @@ Experipy provides a composable grammar for automatically writing scripts and a t
 
 This will run the program ``echo`` with the argument ``Hello World`` in a directory in ``/tmp``, writing the output and error, along with timing information, to the directory ``results``. Directories will be created as needed. A complete example showing how to write an experiment for a Python script can be found in ``test/runtest.py``.
 
-------------
- Components
-------------
+--------------
+ Installation
+--------------
 
-    experipy.grammar
-        Contains abstractions for describing program executables, their argurments, and relationships between them such as pipelines. 
+``experipy`` can be installed from PyPI, and has no other dependencies.
 
-    experipy.system
-        Contains a number of standard tools such as ``cp``, ``mkdir``, and the Python interpreter described as elements within the grammar.
+::
+    ?> pip install experipy
+    
+---------------
+ Documentation
+---------------
 
-    experipy.exp
-        Contains the Experiment class, instances of which accepts a composition in the grammar, and can generate and execute a shell script from it.
-
-    experipy.utils
-        Contains the Namespace class, a tool which allows setting and configuring collections of constant values like file names and paths. Constants defined in Namespaces can be overridden by setting a new value in ``~/.experipyrc``.
-
-    corsys
-        Tools used by the Corsys research group at UTK, will likely be separated at some point, but serves as a useful example (Heavily WIP)
+Full documentation for experipy can be found at https://experipy.readthedocs.io. 
 
 -----------------------
  Features In The Works
