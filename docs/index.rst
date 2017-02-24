@@ -8,8 +8,8 @@ experipy: Automating Script Generation
 
 ``experipy`` is a framework for writing and running Computational Science
 experiments. It provides facilities for describing an experiment as a shell 
-script, and mechanisms for running them. Experiments can be run locally and also
-submitted to a cluster's job queuing system as a PBS script.
+script, and mechanisms for then running it. Experiments can be run locally and 
+also submitted to a cluster's job queuing system as a PBS script.
 
 ::
 
@@ -29,6 +29,17 @@ framework. In the author's research group, projects often involved running
 dozens of benchmarks with hundreds of configurations in parallel across a 
 cluster, so ``experipy`` was designed to ease the design and scripting of new
 experiments and configurations.
+
+Installation
+============
+
+``experipy`` is available on PyPI:
+
+::
+
+    pip install experipy
+
+Or, you can find it on Github at https://github.com/Elemnir/experipy.
 
 .. toctree::
    :maxdepth: 2
