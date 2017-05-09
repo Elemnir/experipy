@@ -28,6 +28,10 @@ def mkfifo(pipename):
     return Executable("mkfifo", [pipename])
 
 
+def mv(target, dest):
+    return Executable("mv", [target, dest])
+
+
 def rm(*files):
     return Executable("rm", ["-rf"] + list(files))
 

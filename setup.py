@@ -18,7 +18,7 @@ CLASSIFIERS = [
     "Programming Language :: Python :: 2.7",
     "Programming Language :: Python :: Implementation :: CPython",
     "Topic :: Scientific/Engineering",
-    ]
+]
 INSTALL_REQUIRES = []
 
 HERE = os.path.abspath(os.path.dirname(__file__))
