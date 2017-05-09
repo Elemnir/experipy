@@ -159,7 +159,7 @@ class Experiment(object):
         timing.close()
         
 
-    def queue(self, nodes=1, ppn=1, mem="4096m", wtime="480:00:00"):
+    def queue(self, nodes=1, ppn=1, mem="4096m", wtime="480:00:00", dest=None):
         """Submit the experiment to a job queuing system as a PBS script.
         
         Generates a script with a PBS script header, writes the script to the 
@@ -191,7 +191,10 @@ class Experiment(object):
             qout=path.join(self.destdir, Exp.out), 
             qerr=path.join(self.destdir, Exp.err)
         )
-        
+        if dest != None:
+            pbsheader += "\n#PBS -q " + dest
+
+
         # Create the results directory, deleting any previous contents
         if path.exists(self.destdir):
             shutil.rmtree(self.destdir)
