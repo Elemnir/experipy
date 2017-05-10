@@ -119,17 +119,27 @@ class Wrapper(Executable):
     
     def inputs(self):
         """Generator which yields the Wrapper's input files"""
+        seen = set()
         for item in super(Wrapper, self).inputs():
-            yield item
+            if item not in seen:
+                seen.add(item)
+                yield item
         for item in self.wrapped.inputs():
-            yield item
+            if item not in seen:
+                seen.add(item)
+                yield item
     
     def outputs(self):
         """Generator which yields the Wrapper's output files"""
+        seen = set()
         for item in super(Wrapper, self).outputs():
-            yield item
+            if item not in seen:
+                seen.add(item)
+                yield item
         for item in self.wrapped.outputs():
-            yield item
+            if item not in seen:
+                seen.add(item)
+                yield item
 
 
 class Pipeline(Element):
@@ -161,19 +171,29 @@ class Pipeline(Element):
     
     def inputs(self):
         """Generator which yields the Pipeline's input files"""
+        seen = set()
         for item in super(Pipeline, self).inputs():
-            yield item
+            if item not in seen:
+                seen.add(item)
+                yield item
         for part in self.parts:
             for item in part.inputs():
-                yield item
+                if item not in seen:
+                    seen.add(item)
+                    yield item
     
     def outputs(self):
         """Generator which yields the Pipeline's output files"""
+        seen = set()
         for item in super(Pipeline, self).outputs():
-            yield item
+            if item not in seen:
+                seen.add(item)
+                yield item
         for part in self.parts:
             for item in part.outputs():
-                yield item
+                if item not in seen:
+                    seen.add(item)
+                    yield item
 
 
 class Group(Element):
@@ -207,16 +227,27 @@ class Group(Element):
 
     def inputs(self):
         """Generator which yields the Group's input files"""
+        seen = set()
         for item in super(Group, self).inputs():
-            yield item
+            if item not in seen:
+                seen.add(item)
+                yield item
         for part in self.parts:
             for item in part.inputs():
-                yield item
+                if item not in seen:
+                    seen.add(item)
+                    yield item
     
     def outputs(self):
         """Generator which yields the Group's output files"""
+        seen = set()
         for item in super(Group, self).outputs():
-            yield item
+            if item not in seen:
+                seen.add(item)
+                yield item
         for part in self.parts:
             for item in part.outputs():
-                yield item
+                if item not in seen:
+                    seen.add(item)
+                    yield item
+
