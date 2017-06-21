@@ -159,7 +159,7 @@ class Experiment(object):
         timing.close()
         
 
-    def queue(self, nodes=1, ppn=1, mem="4096m", wtime="480:00:00", dest=None):
+    def queue(self, nodes=1, ppn=1, mem="4096m", wtime="24:00:00", dest=""):
         """Submit the experiment to a job queuing system as a PBS script.
         
         Generates a script with a PBS script header, writes the script to the 
@@ -178,6 +178,8 @@ class Experiment(object):
             "4096m".
         wtime : str
             The amount of wall time to request in the PBS script.
+        dest : str
+            Optionally choose to target a resource queue.
         """
        
         # Write the PBS script preamble

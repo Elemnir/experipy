@@ -14,7 +14,7 @@ def cd(dirname):
 
 
 def cp(target, dest, opts=[]):
-    return Executable("cp", opts + ['-t', dest, target])
+    return Executable("cp", opts + ['-R', '-t', dest, target])
 
 
 def mkdir(dirname, make_parents=False):
