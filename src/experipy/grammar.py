@@ -2,13 +2,14 @@
     experipy.grammar
     ~~~~~~~~~~~~~~~~
 
-    This module provides the core elements which compose the Experipy grammar:
-    Executables, Wrappers, Pipelines, and Groups. These elements facilitate 
-    specifying programs to execute as well as the files they depend on. 
+    This module provides the core elements which compose the Experipy 
+    grammar: Executables, Wrappers, Pipelines, and Groups. These 
+    elements facilitate specifying programs to execute as well as the 
+    files they depend on. 
 """
 import re
 
-from .utils import Namespace
+from .config import Namespace
 
 tokens = Namespace(
     wrapped = r"[[wrapped]]",
@@ -21,18 +22,18 @@ class Element(object):
     Parameters
     ----------
     inputs : list
-        A list of strings which are the names of files that the Element relies
-        on for input. These will be copied to the run directory when an 
-        Experiment is used to run the Element.
+        A list of strings which are the names of files that the Element 
+        relies on for input. These will be copied to the run directory 
+        when an Experiment is used to run the Element.
     outputs: list
-        A list of strings which are the names of files that the Element is 
-        expected to generate as output. These will be copied from the run
-        directory when an Experiment is used to run the Element.
+        A list of strings which are the names of files that the Element 
+        is expected to generate as output. These will be copied from the 
+        run directory when an Experiment is used to run the Element.
     """
 
-    def __init__(self, **kwargs):
-        self._inputs = kwargs.get("inputs", [])
-        self._outputs = kwargs.get("outputs", [])
+    def __init__(self, inputs=None, outputs=None):
+        self._inputs = inputs if inputs else []
+        self._outputs = outputs if outputs else []
 
     def inputs(self):
         """Generator which yields the Element's input files"""
@@ -79,27 +80,26 @@ class Executable(Element):
 class Wrapper(Executable):
     """Wrapper objects allow specification of a program which wraps another.
 
-    Wrappers are a subclass of Executable which allow specification of programs
-    such as GDB or Valgrind, which wrap around another program to alter or 
-    observe its execution.
+    Wrappers are a subclass of Executable which allow specification of 
+    programs such as GDB or Valgrind, which wrap around another program 
+    to alter or observe its execution.
 
     Parameters
     ----------
     prog : str
         The name of the program executable.
     opts : list
-        A list of command line options to pass to the program. Must minimally
-        contain a string having the value '[[wrapped]]', which indicates where 
-        the wrapped executable should be inserted into the wrapping 
-        executable's arguments.
+        A list of command line options to pass to the program. Must 
+        minimally contain a string having the value '[[wrapped]]', which 
+        indicates where the wrapped executable should be inserted into 
+        the wrapping executable's argument list.
     wrapped : experipy.Executable
-        The wrapped Executable. Inputs and outputs specified to wrapped will be
-        included in the resultant object's inputs and outputs.
+        The wrapped Executable. Inputs and outputs specified to wrapped 
+        will be included in the resultant object's inputs and outputs.
     wait : bool
-        If False, a '&' will be appended to the argument list, indicating to
-        the shell that it should background the program instead of blocking on
-        it. Defaults to True.
-
+        If False, a '&' will be appended to the argument list, 
+        indicating to the shell that it should background the program 
+        instead of blocking on it. Defaults to True.
     """
 
     def __init__(self, prog, opts, wrapped, **kwargs):
@@ -145,16 +145,17 @@ class Wrapper(Executable):
 class Pipeline(Element):
     """Pipeline objects allow specification of pipelined workflows.
 
-    A Pipeline takes one or more Element parts, and joins them with a '|'
-    operator, indicating to the shell that each part should recieve its input
-    from the previous part, and provide its output to the next.
+    A Pipeline takes one or more Element parts, and joins them with a 
+    '|' operator, indicating to the shell that each part should recieve 
+    its input from the previous part, and provide its output to the 
+    next.
 
     Parameters
     ----------
     *parts : 
-        One or more Executables or Wrappers to be chained together into a 
-        pipeline. Inputs and outputs to the individual parts will be included
-        in the Pipeline's inputs and outputs.
+        One or more Executables or Wrappers to be chained together into 
+        a pipeline. Inputs and outputs to the individual parts will be 
+        included in the Pipeline's inputs and outputs.
     """
 
     def __init__(self, *parts, **kwargs):
@@ -199,18 +200,19 @@ class Pipeline(Element):
 class Group(Element):
     """Group objects allow specification of Executables to be run in order.
 
-    In the resultant script, a Group's parts will be included one after another,
-    in the order they were specified. Groups should be used when specifying 
-    complex experiments involving multiple steps like set up or post-processing,
-    or combined with the wait parameter to Executable to specify programs which
-    should be run concurrently.
+    In the resultant script, a Group's parts will be included one after 
+    another, in the order they were specified. Groups should be used 
+    when specifying complex experiments involving multiple steps like 
+    set up or post-processing, or combined with the wait parameter to 
+    Executable to specify programs which should be run concurrently. A
+    Group can also be used as a part in another Group.
 
     Parameters
     ----------
-    *parts :
-        One or more Elements to be placed into the script. Inputs and outputs
-        to the individual parts will be included in the Group's inputs and 
-        outputs.
+    *parts : 
+        One or more Elements to be placed into the script. Inputs and 
+        outputs to the individual parts will be included in the Group's
+        inputs and outputs.
     """
 
     def __init__(self, *parts, **kwargs):

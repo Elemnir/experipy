@@ -48,7 +48,8 @@ Or, you can find it on Github at https://github.com/Elemnir/experipy.
    grammar
    exp
    system
-   utils
+   config
+   metrics
 
 
 Indices and tables

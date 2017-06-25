@@ -2,9 +2,9 @@
     experipy.exp
     ~~~~~~~~~~~~
 
-    This module provides the Experiment class for running compositions in the
-    grammar, as well as the Exp Namespace for controlling and configuring 
-    Experiment behavior.
+    This module provides the Experiment class for running compositions 
+    in the grammar, as well as the Exp Namespace for controlling and 
+    configuring Experiment behavior.
 """
 from __future__ import absolute_import
 
@@ -16,9 +16,9 @@ from os         import chmod, makedirs, path
 from subprocess import call
 from time       import time
 
-from .system    import cd, cp, mkdir, rm
+from .config    import Namespace
 from .grammar   import Element
-from .utils     import Namespace
+from .system    import cd, cp, mkdir, rm
 
 
 Exp = Namespace("Exp",
@@ -35,22 +35,23 @@ Exp = Namespace("Exp",
 class Experiment(object):
     """Experiment objects perform the generation and execution of runscripts.
     
-    Once a composition has been specified in the grammar, wrapping it in an
-    Experiment allows the user to generate a shell script as a string using the
-    make_runscript method. The run and queue methods provide mechanisms for
-    executing the generated scripts.
+    Once a composition has been specified in the grammar, wrapping it in 
+    an Experiment allows the user to generate a shell script as a string 
+    using the make_runscript method. The run and queue methods provide 
+    mechanisms for executing the generated scripts.
 
     Parameters
     ----------
     cmd : experipy.Element
-        A composition of experipy Elements such as Executable and Group, which
-        defines the behavior the user wishes the Experiment to perform.
+        A composition of experipy Elements such as Executable and Group, 
+        which defines the behavior the user wishes the Experiment to 
+        perform.
     expname : str
         A name to be used for identifying the experiment. Defaults to 
         Exp.defname, which defaults to "exp".
     destdir : str
-        An optional path to a directory where the results from running the
-        experiment should be stored. If None, expname will be used.
+        An optional path to a directory where the results from running 
+        the experiment should be stored. If None, expname will be used.
     """
 
     def __init__(self, cmd, expname=Exp.defname, destdir=None):
@@ -72,11 +73,11 @@ class Experiment(object):
         Parameters
         ----------
         preamble : str
-            The first line(s) of the runscript. Defaults to Exp.shebang, which
-            defaults to "#!/bin/bash".
+            The first line(s) of the runscript. Defaults to Exp.shebang, 
+            which defaults to "#!/bin/bash".
         rm_rundir : bool
-            If True, a line deleting the experiment's working directory will
-            be added to the end of the script. Defaults to True.
+            If True, a line deleting the experiment's working directory 
+            will be added to the end of the script. Defaults to True.
 
         Returns
         -------
@@ -118,16 +119,18 @@ class Experiment(object):
     def run(self, rm_rundir=True):
         """Execute the experiment as a subprocess of the current process.
 
-        Generates a run script, writes that script to the results directory,
-        and then executes the script as a subprocess of the current process.
-        The time the script takes to execute, including loader time, is 
-        recorded. This function blocks until the experiment is complete.
+        Generates a run script, writes that script to the results 
+        directory, and then executes the script as a subprocess of the 
+        current process. The time the script takes to execute, including 
+        setup and clean up time, is recorded. This function blocks until 
+        the experiment is complete.
 
         Parameters
         ----------
         rm_rundir : bool
-            If True, the directory created for running the experiment will be
-            deleted at the end of the experiment. Defaults to True.
+            If True, the directory created for running the experiment 
+            will be deleted at the end of the experiment. Defaults to 
+            True.
         """
 
         # Create the results directory, deleting any previous contents
@@ -162,22 +165,24 @@ class Experiment(object):
     def queue(self, nodes=1, ppn=1, mem="4096m", wtime="24:00:00", dest=""):
         """Submit the experiment to a job queuing system as a PBS script.
         
-        Generates a script with a PBS script header, writes the script to the 
-        results directory, and then submits it to the job queuing system by
-        running the command qsub as a subprocess.
+        Generates a script with a PBS script header, writes the script 
+        to the results directory, and then submits it to the job queuing 
+        system by running the command qsub as a subprocess.
 
         Parameters
         ----------
         nodes : int
-            The number of nodes to request in the PBS script. Defaults to 1.
+            The number of nodes to request in the PBS script. Defaults 
+            to 1.
         ppn : int
-            The number of processors per node to request in the PBS script.
-            Defaults to 1.
+            The number of processors per node to request in the PBS 
+            script. Defaults to 1.
         mem : str
-            The amount of memory to request in the PBS script. Defaults to 
-            "4096m".
+            The amount of memory to request in the PBS script. Defaults 
+            to "4096m".
         wtime : str
             The amount of wall time to request in the PBS script.
+            Defaults to 24 hours.
         dest : str
             Optionally choose to target a resource queue.
         """
@@ -196,7 +201,6 @@ class Experiment(object):
         if dest != None:
             pbsheader += "\n#PBS -q " + dest
 
-
         # Create the results directory, deleting any previous contents
         if path.exists(self.destdir):
             shutil.rmtree(self.destdir)
@@ -205,9 +209,7 @@ class Experiment(object):
         # Write the runscript
         fname  = path.join(self.destdir, Exp.runsh)
         with open(fname, "w") as f:
-            f.write(self.make_runscript(
-                preamble=pbsheader 
-            ))
+            f.write(self.make_runscript(preamble=pbsheader))
         
         chmod(fname, 0o755)
         

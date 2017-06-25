@@ -41,12 +41,7 @@ def wait():
 
 
 def python_script(script, sopts=[], pythonexe="python", **kwargs):
-    if 'inputs' in kwargs:
-        kwargs['inputs'].append(path.abspath(script))
-    else:
-        kwargs['inputs'] = [path.abspath(script)]
-
-    return Executable(pythonexe, [script] + sopts, **kwargs)
+    return Executable(pythonexe, [path.abspath(script)] + sopts, **kwargs)
 
 
 def java_app(jarfile, popts=[], javaexe="java", jopts=[], **kwargs):
