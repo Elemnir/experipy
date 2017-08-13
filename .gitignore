@@ -5,5 +5,7 @@
 build/
 dist/
 venv/
+py2venv/
+py3venv/
 results/
 docs/_build
