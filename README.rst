@@ -2,6 +2,9 @@
  Experipy
 ==========
 
+.. image:: https://travis-ci.org/Elemnir/experipy.svg?branch=master
+    :target: https://travis-ci.org/Elemnir/experipy
+
 A framework for writing and running Computational Science experiments.
 
 ``experipy`` provides a composable grammar for automating experiment script generation and a tool which can then execute those scripts. Supports PBS script based queueing.
