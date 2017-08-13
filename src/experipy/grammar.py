@@ -11,10 +11,6 @@ import re
 
 from .config import Namespace
 
-tokens = Namespace(
-    wrapped = r"[[wrapped]]",
-)
-
 
 class Element(object):
     """The Element class forms the grammar's base class.
@@ -105,8 +101,8 @@ class Wrapper(Executable):
     def __init__(self, prog, opts, wrapped, **kwargs):
         if not isinstance(wrapped, Executable):
             raise TypeError("wrapped must be an instance of Executable")
-        elif not isinstance(opts, list) or tokens.wrapped not in opts:
-            raise TypeError("opts must be a list containing '{}'".format(tokens.wrapped))
+        elif "[[wrapped]]" not in opts:
+            raise ValueError("opts must contain '[[wrapped]]'")
         
         super(Wrapper, self).__init__(prog, opts, **kwargs)
         self.wrapped = wrapped
@@ -114,7 +110,7 @@ class Wrapper(Executable):
     def __str__(self):
         """Render the Wrapper as it will appear in the shell script."""
         return super(Wrapper, self).__str__().replace(
-            tokens.wrapped, str(self.wrapped)
+            "[[wrapped]]", str(self.wrapped)
         )
     
     def inputs(self):
