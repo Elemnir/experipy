@@ -162,7 +162,7 @@ class Experiment(object):
         timing.close()
         
 
-    def queue(self, nodes=1, ppn=1, mem="4096m", wtime="24:00:00", dest=""):
+    def queue(self, q=None, A=None, **kwargs):
         """Submit the experiment to a job queuing system as a PBS script.
         
         Generates a script with a PBS script header, writes the script 
@@ -171,35 +171,30 @@ class Experiment(object):
 
         Parameters
         ----------
-        nodes : int
-            The number of nodes to request in the PBS script. Defaults 
-            to 1.
-        ppn : int
-            The number of processors per node to request in the PBS 
-            script. Defaults to 1.
-        mem : str
-            The amount of memory to request in the PBS script. Defaults 
-            to "4096m".
-        wtime : str
-            The amount of wall time to request in the PBS script.
-            Defaults to 24 hours.
-        dest : str
-            Optionally choose to target a resource queue.
+        q : str
+            Optionally request a resource queue.
+        A : str
+            Optionally name the account to charge for this job.
+        **kwargs : 
+            The remaining keyword arguments will be combined into 
+            resource requests with -l.
         """
        
         # Write the PBS script preamble
-        pbsheader = (Exp.shebang
-            + "\n#PBS -N {name}\n"
-            + "#PBS -l nodes={nodes}:ppn={ppn},mem={mem}\n"
-            + "#PBS -l walltime={wtime}\n"
-            + "#PBS -o {qout}\n#PBS -e {qerr}"
-            + ""
-        ).format(name=self.expname, nodes=nodes, ppn=ppn, mem=mem, wtime=wtime,
+        pbsheader = (
+            Exp.shebang + "\n#PBS -N {name}\n#PBS -o {qout}\n#PBS -e {qerr}"
+        ).format(
+            name=self.expname, 
             qout=path.join(self.destdir, Exp.out), 
             qerr=path.join(self.destdir, Exp.err)
         )
-        if dest != None:
-            pbsheader += "\n#PBS -q " + dest
+        if q != None:
+            pbsheader += "\n#PBS -q " + q
+        if A != None:
+            pbsheader += "\n#PBS -A " + A
+        if kwargs:
+            reqs = ",".join(["{0}={1}".format(k, v) for k,v in kwargs.items()])
+            pbsheader += "\n#PBS -l " + reqs
 
         # Create the results directory, deleting any previous contents
         if path.exists(self.destdir):
