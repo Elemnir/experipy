@@ -9,7 +9,7 @@ from . import (
 )
 
 
-__version__     = "0.3.0"
+__version__     = "0.3.1"
 
 __title__       = "experipy"
 __description__ = "A framework for writing and running Computational Science experiments"

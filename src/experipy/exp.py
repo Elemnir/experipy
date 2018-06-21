@@ -162,7 +162,7 @@ class Experiment(object):
         timing.close()
         
 
-    def queue(self, q=None, A=None, **kwargs):
+    def queue(self, h=False, n=False, q=None, A=None, **kwargs):
         """Submit the experiment to a job queuing system as a PBS script.
         
         Generates a script with a PBS script header, writes the script 
@@ -171,6 +171,10 @@ class Experiment(object):
 
         Parameters
         ----------
+        h : bool
+            Will add a ``-h`` to pbs headers if True, Default is False.
+        n : bool
+            Will add a ``-n`` to pbs headers if True, Default is False.
         q : str
             Optionally request a resource queue.
         A : str
@@ -188,6 +192,10 @@ class Experiment(object):
             qout=path.join(self.destdir, Exp.out), 
             qerr=path.join(self.destdir, Exp.err)
         )
+        if h == True:
+            pbsheader += "\n#PBS -h"
+        if n == True:
+            pbsheader += "\n#PBS -n"
         if q != None:
             pbsheader += "\n#PBS -q " + q
         if A != None:
