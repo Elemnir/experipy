@@ -258,7 +258,7 @@ class Experiment(object):
         # Write the runscript
         fname  = path.join(self.destdir, Exp.runsh)
         with open(fname, "w") as f:
-            f.write(self.make_runscript(preamble=pbsheader))
+            f.write(self.make_runscript(preamble=header))
         
         chmod(fname, 0o755)
         
