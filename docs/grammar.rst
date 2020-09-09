@@ -56,4 +56,11 @@ of a single Executable, Wrapper, or Pipeline.
    :members:
 
 
+1.6. Block objects
+==================
 
+Blocks are simple text blocks that will be rendered into the runscript without
+additional processing. 
+
+.. autoclass:: experipy.grammar.Block
+   :members:

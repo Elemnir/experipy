@@ -218,3 +218,49 @@ class Experiment(object):
         
         # Submit to the queue
         call(["qsub", fname])
+
+
+    def sbatch(self, **kwargs):
+        """Submit the experiment to a Slurm cluster as an sbatch script.
+        
+        Generates a script with a Slurm script header, writes the script 
+        to the results directory, and then submits it to the job queuing 
+        system by running the command sbatch as a subprocess.
+
+        Parameters
+        ----------
+
+        **kwargs : 
+            Keyword arguments will be translated to SBATCH directives of 
+            the form ``#SBATCH --<key>=<value>``.
+        """
+       
+        # Write the script preamble
+        header = (
+            Exp.shebang + 
+            "\n#SBATCH --job-name {name}" + 
+            "\n#SBATCH --output {qout}" + 
+            "\n#SBATCH --error {qerr}"
+        ).format(
+            name=self.expname, 
+            qout=path.join(self.destdir, Exp.out), 
+            qerr=path.join(self.destdir, Exp.err)
+        )
+
+        for k, v in kwargs.items():
+            header += "\n#SBATCH --{0}={1}".format(k, v)
+
+        # Create the results directory, deleting any previous contents
+        if path.exists(self.destdir):
+            shutil.rmtree(self.destdir)
+        makedirs(self.destdir)
+        
+        # Write the runscript
+        fname  = path.join(self.destdir, Exp.runsh)
+        with open(fname, "w") as f:
+            f.write(self.make_runscript(preamble=pbsheader))
+        
+        chmod(fname, 0o755)
+        
+        # Submit to the queue
+        call(["sbatch", fname])

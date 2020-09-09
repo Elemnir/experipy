@@ -2,11 +2,18 @@
  Experipy Changelog
 ====================
 
+Version 0.4.0
+-------------
+
+- Added :func:`~exp.Experiment.sbatch` to submit jobs to a Slurm cluster.
+- Added :class:`~grammar.Block` for writing trivially rendered scripts.
+
+
 Version 0.3.0
 -------------
 
 - More bugfixes
-- Added dest argument to :func:`exp.Experiment.queue` to allow targeting a
+- Added dest argument to :func:`~exp.Experiment.queue` to allow targeting a
   specific resource queue
 - Added :class:`~metrics.Metric` for automatically extracting values from 
   results files.

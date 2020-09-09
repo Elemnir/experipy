@@ -249,3 +249,20 @@ class Group(Element):
                     seen.add(item)
                     yield item
 
+
+class Block(Element):
+    """Blocks allow arbitrary text to be rendered into the script 
+    without further processing or enforcing other grammatical rules.
+    
+    Parameters
+    ----------
+    text : str
+        The text to be rendered.
+    """
+    def __init__(self, text, **kwargs):
+        super(Block, self).__init__(**kwargs)
+        self.text = text
+
+    def __str__(self):
+        """Render the Block as it will appear in the script."""
+        return str(self.text)
