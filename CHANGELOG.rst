@@ -2,6 +2,12 @@
  Experipy Changelog
 ====================
 
+Version 0.4.1
+-------------
+
+- In :func:`~exp.Experiment.sbatch`, keyword argument names with underscores 
+  will be translated to the equivalent with dashes in the emitted scripts.
+
 Version 0.4.0
 -------------
 

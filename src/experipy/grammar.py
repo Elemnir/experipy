@@ -3,7 +3,7 @@
     ~~~~~~~~~~~~~~~~
 
     This module provides the core elements which compose the Experipy 
-    grammar: Executables, Wrappers, Pipelines, and Groups. These 
+    grammar: Executables, Wrappers, Pipelines, Groups, and Blocks. These
     elements facilitate specifying programs to execute as well as the 
     files they depend on. 
 """

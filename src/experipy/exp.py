@@ -232,7 +232,10 @@ class Experiment(object):
 
         **kwargs : 
             Keyword arguments will be translated to SBATCH directives of 
-            the form ``#SBATCH --<key>=<value>``.
+            the form ``#SBATCH --<key>=<value>``. Underscores in keyword
+            argument names will be substituted for dashes in the emitted
+            SBATCH directives. For example, ``cpus_per_task=4`` will be 
+            translated to ``#SBATCH --cpus-per-task=4``.
         """
        
         # Write the script preamble
@@ -248,7 +251,7 @@ class Experiment(object):
         )
 
         for k, v in kwargs.items():
-            header += "\n#SBATCH --{0}={1}".format(k, v)
+            header += "\n#SBATCH --{0}={1}".format(k.replace('_', '-'), v)
 
         # Create the results directory, deleting any previous contents
         if path.exists(self.destdir):
